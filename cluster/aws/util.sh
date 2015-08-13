@@ -460,8 +460,8 @@ function find-release-tars {
   fi
 }
 
-# Generate a unique name for the S3 bucket.
-# Uses aws_access_key_id when available, otherwise uses a random string
+# Generates a unique name for the S3 bucket.
+# Uses aws_access_key_id when available, otherwise uses a random string.
 #
 # Vars set:
 # AWS_S3_BUCKET
