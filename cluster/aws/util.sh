@@ -477,11 +477,18 @@ function upload-server-tars() {
 
   if [[ -z ${AWS_S3_BUCKET-} ]]; then
       local project_hash=
+      local md5_input=
       local key=$(aws configure get aws_access_key_id)
-      if which md5 > /dev/null 2>&1; then
-        project_hash=$(md5 -q -s "${USER} ${key}")
+      if [[ -z ${key} ]]; then
+        random_factor=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 32 | head -n 1)
+        md5_input="${USER} ${random_factor}"
       else
-        project_hash=$(echo -n "${USER} ${key}" | md5sum | awk '{ print $1 }')
+        md5_input="${USER} ${key}"
+      fi
+      if which md5 > /dev/null 2>&1; then
+        project_hash=$(md5 -q -s ${md5_input})
+      else
+        project_hash=$(echo -n ${md5_input}| md5sum | awk '{ print $1 }')
       fi
       AWS_S3_BUCKET="kubernetes-staging-${project_hash}"
   fi
