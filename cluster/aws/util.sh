@@ -460,21 +460,13 @@ function find-release-tars {
   fi
 }
 
-# Take the local tar files and upload them to S3.  They will then be
-# downloaded by the master as part of the start up script for the master.
+# Generate a unique name for the S3 bucket.
+# Uses aws_access_key_id when available, otherwise uses a random string
 #
-# Assumed vars:
-#   SERVER_BINARY_TAR
-#   SALT_TAR
 # Vars set:
-#   SERVER_BINARY_TAR_URL
-#   SALT_TAR_URL
-function upload-server-tars() {
-  SERVER_BINARY_TAR_URL=
-  SALT_TAR_URL=
+# AWS_S3_BUCKET
 
-  ensure-temp-dir
-
+function resolve_s3_bucket_name() {
   if [[ -z ${AWS_S3_BUCKET-} ]]; then
       local project_hash=
       local md5_input=
@@ -492,6 +484,24 @@ function upload-server-tars() {
       fi
       AWS_S3_BUCKET="kubernetes-staging-${project_hash}"
   fi
+}
+
+# Take the local tar files and upload them to S3.  They will then be
+# downloaded by the master as part of the start up script for the master.
+#
+# Assumed vars:
+#   SERVER_BINARY_TAR
+#   SALT_TAR
+# Vars set:
+#   SERVER_BINARY_TAR_URL
+#   SALT_TAR_URL
+function upload-server-tars() {
+  SERVER_BINARY_TAR_URL=
+  SALT_TAR_URL=
+
+  ensure-temp-dir
+
+	resolve_s3_bucket_name
 
   echo "Uploading to Amazon S3"
 
