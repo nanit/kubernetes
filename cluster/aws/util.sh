@@ -501,7 +501,7 @@ function upload-server-tars() {
 
   ensure-temp-dir
 
-	resolve_s3_bucket_name
+  resolve_s3_bucket_name
 
   echo "Uploading to Amazon S3"
 
